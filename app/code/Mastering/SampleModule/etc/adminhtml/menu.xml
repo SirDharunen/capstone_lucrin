@@ -12,7 +12,7 @@
              module="Mastering_SampleModule"
              sortOrder="10"
              parent="Mastering_SampleModule::menu"
-             action="mastering_samplemodule/item/index"
+             action="mastering/item/index"
              resource="Mastering_SampleModule::manage_items"/>
         <add id="Mastering_SampleModule::configuration"
              title="Configuration"
