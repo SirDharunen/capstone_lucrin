@@ -3,7 +3,7 @@ namespace Mastering\SampleModule\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
-class item extends AbstractDb
+class Item extends AbstractDb
 {
     protected function _construct(): void
     {
