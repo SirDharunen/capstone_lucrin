@@ -21,5 +21,12 @@
              parent="Mastering_SampleModule::menu"
              action="adminhtml/system_config/edit/section/samplemodule"
              resource="Mastering_SampleModule::configuration"/>
+        <add id="Mastering_SampleModule::live_stream_integration"
+             title="Live Stream Integration"
+             module="Mastering_SampleModule"
+             sortOrder="20"
+             parent="Mastering_SampleModule::menu"
+             action="mastering/livestream/index"
+             resource="Mastering_SampleModule::live_stream_integration"/>
     </menu>
 </config>
