@@ -5,6 +5,7 @@
             <resource id="Magento_Backend::admin">
                 <resource id="Mastering_SampleModule::samplemodule" title="Sample Module" sortOrder="51">
                     <resource id="Mastering_SampleModule::manage_items" title="Manage Items" sortOrder="10" />
+                    <resource id="Mastering_SampleModule::live_stream_integration" title="Live Stream Integration" sortOrder="20" />
                     <resource id="Mastering_SampleModule::configuration" title="Configuration" sortOrder="99" />
                 </resource>
                 <resource id="Magento_Backend::stores">
