@@ -1,0 +1,44 @@
+<div class="livestream-integration">
+    <h1><?= $block->escapeHtml(__('Live Stream Integration')) ?></h1>
+    <p><?= $block->escapeHtml(__('This is where you can manage your live stream integration.')) ?></p>
+    
+    <div class="charts-container" style="display: flex; justify-content: space-between;">
+        <div class="chart-wrapper" style="width: 48%;">
+            <h2><?= $block->escapeHtml(__('Revenue Chart')) ?></h2>
+            <div id="revenueChart"></div>
+        </div>
+        <div class="chart-wrapper" style="width: 48%;">
+            <h2><?= $block->escapeHtml(__('Number of Orders')) ?></h2>
+            <div id="orderChart"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawCharts);
+
+    function drawCharts() {
+        var revenueData = google.visualization.arrayToDataTable(<?= $block->getChartData() ?>);
+        var orderData = google.visualization.arrayToDataTable(<?= $block->getOrderChartData() ?>);
+
+        var revenueOptions = {
+            title: 'Revenue Over Time',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+        };
+
+        var orderOptions = {
+            title: 'Number of Orders Over Time',
+            curveType: 'function',
+            legend: { position: 'bottom' }
+        };
+
+        var revenueChart = new google.visualization.LineChart(document.getElementById('revenueChart'));
+        revenueChart.draw(revenueData, revenueOptions);
+
+        var orderChart = new google.visualization.LineChart(document.getElementById('orderChart'));
+        orderChart.draw(orderData, orderOptions);
+    }
+</script>
