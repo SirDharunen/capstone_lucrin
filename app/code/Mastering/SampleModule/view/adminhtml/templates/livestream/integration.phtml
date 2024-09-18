@@ -1,44 +1,442 @@
 <div class="livestream-integration">
-    <h1><?= $block->escapeHtml(__('Live Stream Integration')) ?></h1>
-    <p><?= $block->escapeHtml(__('This is where you can manage your live stream integration.')) ?></p>
+    <h1 class="dashboard-title"><?= $block->escapeHtml(__('Live Stream Integration Dashboard')) ?></h1>
     
-    <div class="charts-container" style="display: flex; justify-content: space-between;">
-        <div class="chart-wrapper" style="width: 48%;">
-            <h2><?= $block->escapeHtml(__('Revenue Chart')) ?></h2>
-            <div id="revenueChart"></div>
+    <div class="dashboard-layout">
+        <div class="dashboard-content">
+            <div class="dashboard-section refunds-overview">
+                <h2><?= $block->escapeHtml(__('Refunds Overview')) ?></h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3><?= $block->escapeHtml(__('Total Refund Amount')) ?></h3>
+                        <p class="metric-value">$<?= $block->escapeHtml(number_format($block->getTotalRefundAmount(), 2)) ?></p>
+                    </div>
+                    <div class="metric-card">
+                        <h3><?= $block->escapeHtml(__('Number of Refunds')) ?></h3>
+                        <p class="metric-value"><?= $block->escapeHtml($block->getRefundCount()) ?></p>
+                    </div>
+                    <div class="metric-card">
+                        <h3><?= $block->escapeHtml(__('Refund Rate')) ?></h3>
+                        <p class="metric-value"><?= $block->escapeHtml(sprintf('%.2f%%', $block->getRefundRate())) ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-section charts-grid">
+                <div class="chart-group">
+                    <div class="metric-card">
+                        <h3><?= $block->escapeHtml(__('Total Revenue')) ?></h3>
+                        <p class="metric-value">$<?= $block->escapeHtml(number_format($block->getTotalRevenue(), 2)) ?></p>
+                    </div>
+                    <div class="chart-card">
+                        <h2><?= $block->escapeHtml(__('Revenue Over Time')) ?></h2>
+                        <div id="revenueChart" class="chart"></div>
+                    </div>
+                </div>
+                <div class="chart-group">
+                    <div class="metric-card">
+                        <h3><?= $block->escapeHtml(__('Total Products')) ?></h3>
+                        <p class="metric-value"><?= $block->escapeHtml($block->getProductCount()) ?></p>
+                    </div>
+                    <div class="chart-card">
+                        <h2><?= $block->escapeHtml(__('Refund Trend')) ?></h2>
+                        <div id="refundChart" class="chart"></div>
+                    </div>
+                </div>
+                <div class="chart-group double-width">
+                    <div class="chart-card">
+                        <div class="metric-card">
+                            <h3><?= $block->escapeHtml(__('Total Orders')) ?></h3>
+                            <p class="metric-value"><?= $block->escapeHtml($block->getTotalOrders()) ?></p>
+                        </div>
+                        <h2><?= $block->escapeHtml(__('Orders Over Time')) ?></h2>
+                        <div id="orderChart" class="chart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h2><?= $block->escapeHtml(__('Top 10 Countries by Revenue')) ?></h2>
+                        <div id="countryRevenueChart" class="chart"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="chart-wrapper" style="width: 48%;">
-            <h2><?= $block->escapeHtml(__('Number of Orders')) ?></h2>
-            <div id="orderChart"></div>
+        
+        <div class="dashboard-sidebar">
+            <div class="filter-widget">
+                <h3 class="filter-title"><?= $block->escapeHtml(__('Date Range Filter')) ?></h3>
+                <form class="filter-form" method="get" action="<?= $block->getUrl('*/*/index') ?>">
+                    <div class="field">
+                        <label for="from_date"><?= $block->escapeHtml(__('From')) ?></label>
+                        <div class="date-input-wrapper">
+                            <input type="date" id="from_date" name="from_date" value="<?= $block->escapeHtmlAttr($block->getFromDate()) ?>">
+                            <i class="date-icon"></i>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="to_date"><?= $block->escapeHtml(__('To')) ?></label>
+                        <div class="date-input-wrapper">
+                            <input type="date" id="to_date" name="to_date" value="<?= $block->escapeHtmlAttr($block->getToDate()) ?>">
+                            <i class="date-icon"></i>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="action-apply"><?= $block->escapeHtml(__('Apply')) ?></button>
+                        <a href="<?= $block->getUrl('*/*/index') ?>" class="action-reset"><?= $block->escapeHtml(__('Reset')) ?></a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
+<style>
+    .livestream-integration {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        color: #333;
+        padding: 30px;
+        box-sizing: border-box;
+        background-color: #f5f7fa;
+    }
+    .dashboard-title {
+        font-size: 28px;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 300;
+    }
+    .dashboard-layout {
+        display: flex;
+        gap: 30px;
+    }
+    .dashboard-content {
+        flex: 1;
+    }
+    .dashboard-sidebar {
+        width: 300px;
+        flex-shrink: 0;
+    }
+    .filter-widget {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 25px;
+        transition: all 0.3s ease;
+    }
+    .filter-widget:hover {
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    .filter-title {
+        font-size: 20px;
+        color: #34495e;
+        margin-bottom: 20px;
+        font-weight: 500;
+        text-align: center;
+    }
+    .filter-form .field {
+        margin-bottom: 20px;
+    }
+    .filter-form label {
+        display: block;
+        margin-bottom: 8px;
+        color: #7f8c8d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .date-input-wrapper {
+        position: relative;
+    }
+    .filter-form input[type="date"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        appearance: none;
+        -webkit-appearance: none;
+        background-color: transparent;
+    }
+    .filter-form input[type="date"]:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    .date-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+        pointer-events: none;
+    }
+    .filter-form .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+    }
+    .action-apply,
+    .action-reset {
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+        flex: 1;
+    }
+    .action-apply {
+        background: #3498db;
+        color: #fff;
+        border: none;
+        margin-right: 10px;
+    }
+    .action-apply:hover {
+        background: #2980b9;
+    }
+    .action-reset {
+        background: #ecf0f1;
+        color: #7f8c8d;
+        border: 1px solid #bdc3c7;
+    }
+    .action-reset:hover {
+        background: #bdc3c7;
+        color: #34495e;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 1200px) {
+        .dashboard-layout {
+            flex-direction: column;
+        }
+        .dashboard-sidebar {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+    }
+    
+    .dashboard-section {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        padding: 25px;
+    }
+    .refunds-overview h2, .chart-card h2 {
+        font-size: 22px;
+        color: #34495e;
+        margin-bottom: 20px;
+        font-weight: 400;
+    }
+    .metrics-grid, .charts-grid {
+        display: grid;
+        gap: 20px;
+    }
+    .metrics-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .chart-group {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .chart-group.double-width {
+        grid-column: span 2;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .chart-group.double-width .chart-card {
+        display: flex;
+        flex-direction: column;
+    }
+    .chart-group.double-width .metric-card {
+        margin-bottom: 20px;
+    }
+    .metric-card, .chart-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+    .metric-card:hover, .chart-card:hover {
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    .metric-card h3, .chart-card h2 {
+        font-size: 18px;
+        color: #7f8c8d;
+        margin-bottom: 10px;
+        font-weight: 400;
+    }
+    .metric-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #3498db;
+        margin: 0;
+    }
+    .chart {
+        height: 300px;
+        width: 100%;
+        flex-grow: 1;
+    }
+    @media (max-width: 1200px) {
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        .chart-group.double-width {
+            grid-column: auto;
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', {'packages':['corechart', 'bar']});
     google.charts.setOnLoadCallback(drawCharts);
 
     function drawCharts() {
-        var revenueData = google.visualization.arrayToDataTable(<?= $block->getChartData() ?>);
-        var orderData = google.visualization.arrayToDataTable(<?= $block->getOrderChartData() ?>);
-
-        var revenueOptions = {
-            title: 'Revenue Over Time',
-            curveType: 'function',
-            legend: { position: 'bottom' }
-        };
-
-        var orderOptions = {
-            title: 'Number of Orders Over Time',
-            curveType: 'function',
-            legend: { position: 'bottom' }
-        };
-
-        var revenueChart = new google.visualization.LineChart(document.getElementById('revenueChart'));
-        revenueChart.draw(revenueData, revenueOptions);
-
-        var orderChart = new google.visualization.LineChart(document.getElementById('orderChart'));
-        orderChart.draw(orderData, orderOptions);
+        drawRevenueChart();
+        drawRefundChart();
+        drawOrderChart();
+        drawCountryRevenueChart();
     }
+
+    function drawRevenueChart() {
+        var data = google.visualization.arrayToDataTable(<?= $block->getChartData() ?>);
+        var options = {
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            colors: ['#3498db'],
+            backgroundColor: { fill:'transparent' },
+            chartArea: {width: '80%', height: '70%'},
+            hAxis: {
+                title: 'Date',
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'}
+            },
+            vAxis: {
+                title: 'Revenue',
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'},
+                format: 'currency'
+            }
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('revenueChart'));
+        chart.draw(data, options);
+    }
+
+    function drawRefundChart() {
+        var data = google.visualization.arrayToDataTable(<?= $block->getRefundChartData() ?>);
+        var options = {
+            legend: { position: 'bottom' },
+            colors: ['#e74c3c'],
+            backgroundColor: { fill:'transparent' },
+            chartArea: {width: '80%', height: '70%'},
+            hAxis: {
+                title: 'Date',
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'}
+            },
+            vAxis: {
+                title: 'Refund Amount',
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'},
+                format: 'currency'
+            },
+            areaOpacity: 0.3,
+            isStacked: true
+        };
+        var chart = new google.visualization.AreaChart(document.getElementById('refundChart'));
+        chart.draw(data, options);
+    }
+
+    function drawOrderChart() {
+        var data = google.visualization.arrayToDataTable(<?= $block->getOrderChartData() ?>);
+        var options = {
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            colors: ['#2ecc71'],
+            backgroundColor: { fill:'transparent' },
+            chartArea: {width: '80%', height: '70%'},
+            hAxis: {
+                title: 'Date',
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'}
+            },
+            vAxis: {
+                title: 'Number of Orders',
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'}
+            }
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('orderChart'));
+        chart.draw(data, options);
+    }
+
+    function drawCountryRevenueChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Country', 'Revenue'],
+            <?php
+            $revenueByCountry = json_decode($block->getRevenueByCountryData(), true);
+            foreach ($revenueByCountry as $data) {
+                echo "['" . $block->escapeHtml($data['country_name']) . "', " . floatval($data['revenue_amount']) . "],";
+            }
+            ?>
+        ]);
+
+        var options = {
+            chartArea: {width: '70%', height: '80%'},
+            hAxis: {
+                title: 'Revenue',
+                minValue: 0,
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'},
+                format: 'currency'
+            },
+            vAxis: {
+                title: 'Country',
+                textStyle: {color: '#7f8c8d'},
+                titleTextStyle: {color: '#7f8c8d'}
+            },
+            legend: {position: 'none'},
+            colors: ['#3498db'],
+            backgroundColor: { fill:'transparent' }
+        };
+
+        var chart = new google.visualization.BarChart(document.getElementById('countryRevenueChart'));
+        chart.draw(data, options);
+    }
+
+    // Redraw charts on window resize
+    window.addEventListener('resize', function() {
+        drawCharts();
+    });
+</script>
+
+<script>
+    require(['jquery'], function($) {
+        $(document).ready(function() {
+            // Add animation to the filter widget
+            $('.filter-widget').addClass('animate__animated animate__fadeInRight');
+            
+            // Enhance date input fields
+            $('input[type="date"]').on('focus', function() {
+                $(this).parent().addClass('focused');
+            }).on('blur', function() {
+                $(this).parent().removeClass('focused');
+            });
+        });
+    });
 </script>
