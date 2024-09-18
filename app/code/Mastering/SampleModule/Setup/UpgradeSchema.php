@@ -12,7 +12,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         $setup->startSetup();
 
-        if (version_compare($context->getVersion(), '1.0.2', '<')) {
+        if (version_compare($context->getVersion(), '1.0.7', '<')) {
             $this->createCountryTable($setup);
             $this->createProductTable($setup);
             $this->createOrderTable($setup);
@@ -70,53 +70,98 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
     private function createProductTable(SchemaSetupInterface $setup)
     {
-        $table = $setup->getConnection()->newTable(
-            $setup->getTable('mastering_product_table')
-        )->addColumn(
-            'id',
-            Table::TYPE_INTEGER,
-            null,
-            ['identity' => true, 'nullable' => false, 'primary' => true],
-            'ID'
-        )->addColumn(
-            'product_name',
-            Table::TYPE_TEXT,
-            255,
-            ['nullable' => false],
-            'Product Name'
-        )->addColumn(
-            'product_description',
-            Table::TYPE_TEXT,
-            '64k',
-            ['nullable' => true],
-            'Product Description'
-        )->addColumn(
-            'price',
-            Table::TYPE_DECIMAL,
-            '12,4',
-            ['nullable' => false],
-            'Price'
-        )->addColumn(
-            'leather_type',
-            Table::TYPE_TEXT,
-            100,
-            ['nullable' => true],
-            'Leather Type'
-        )->addColumn(
-            'colour',
-            Table::TYPE_TEXT,
-            50,
-            ['nullable' => true],
-            'Colour'
-        )->addColumn(
-            'created_at',
-            Table::TYPE_TIMESTAMP,
-            null,
-            ['nullable' => false, 'default' => Table::TIMESTAMP_INIT],
-            'Created At'
-        )->setComment('Product Table');
+        $tableName = $setup->getTable('mastering_product_table');
+        $connection = $setup->getConnection();
 
-        $setup->getConnection()->createTable($table);
+        if (!$connection->isTableExists($tableName)) {
+            $table = $connection->newTable($tableName)
+                ->addColumn(
+                    'id',
+                    Table::TYPE_INTEGER,
+                    null,
+                    ['identity' => true, 'nullable' => false, 'primary' => true],
+                    'ID'
+                )
+                ->addColumn(
+                    'product_name',
+                    Table::TYPE_TEXT,
+                    255,
+                    ['nullable' => false],
+                    'Product Name'
+                )
+                ->addColumn(
+                    'product_description',
+                    Table::TYPE_TEXT,
+                    '64k',
+                    ['nullable' => true],
+                    'Product Description'
+                )
+                ->addColumn(
+                    'price',
+                    Table::TYPE_DECIMAL,
+                    '12,4',
+                    ['nullable' => false],
+                    'Price'
+                )
+                ->addColumn(
+                    'cost',
+                    Table::TYPE_DECIMAL,
+                    '12,4',
+                    ['nullable' => false],
+                    'Cost'
+                )
+                ->addColumn(
+                    'leather_type',
+                    Table::TYPE_TEXT,
+                    100,
+                    ['nullable' => true],
+                    'Leather Type'
+                )
+                ->addColumn(
+                    'colour',
+                    Table::TYPE_TEXT,
+                    50,
+                    ['nullable' => true],
+                    'Colour'
+                )
+                ->addColumn(
+                    'created_at',
+                    Table::TYPE_TIMESTAMP,
+                    null,
+                    ['nullable' => false, 'default' => Table::TIMESTAMP_INIT],
+                    'Created At'
+                )
+                ->addColumn(
+                    'country_id',
+                    Table::TYPE_INTEGER,
+                    null,
+                    ['nullable' => false],
+                    'Country ID'
+                )
+                ->addForeignKey(
+                    $setup->getFkName('mastering_product_table', 'country_id', 'mastering_country_table', 'id'),
+                    'country_id',
+                    $setup->getTable('mastering_country_table'),
+                    'id',
+                    Table::ACTION_CASCADE
+                )
+                ->setComment('Product Table');
+
+            $connection->createTable($table);
+        } else {
+            if (!$connection->tableColumnExists($tableName, 'cost')) {
+                $connection->addColumn(
+                    $tableName,
+                    'cost',
+                    [
+                        'type' => Table::TYPE_DECIMAL,
+                        'length' => '12,4',
+                        'nullable' => false,
+                        'comment' => 'Cost'
+                    ]
+                );
+            }
+        }
     }
 
     private function createOrderTable(SchemaSetupInterface $setup)
@@ -154,11 +199,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             ['nullable' => false],
             'Shipping Address'
         )->addColumn(
-            'tax',
-            Table::TYPE_DECIMAL,
-            '12,4',
+            'order_num',
+            Table::TYPE_TEXT,
+            255,
             ['nullable' => false],
-            'Tax'
+            'Order Number'
         )->addColumn(
             'discount',
             Table::TYPE_DECIMAL,
@@ -205,11 +250,23 @@ class UpgradeSchema implements UpgradeSchemaInterface
             ['nullable' => false],
             'Exchange Rate'
         )->addColumn(
+            'country_id',
+            Table::TYPE_INTEGER,
+            null,
+            ['nullable' => false],
+            'Country ID'
+        )->addColumn(
             'created_at',
             Table::TYPE_TIMESTAMP,
             null,
             ['nullable' => false, 'default' => Table::TIMESTAMP_INIT],
             'Created At'
+        )->addForeignKey(
+            $setup->getFkName('mastering_revenue_table', 'country_id', 'mastering_country_table', 'id'),
+            'country_id',
+            $setup->getTable('mastering_country_table'),
+            'id',
+            Table::ACTION_CASCADE
         )->setComment('Revenue Table');
 
         $setup->getConnection()->createTable($table);
