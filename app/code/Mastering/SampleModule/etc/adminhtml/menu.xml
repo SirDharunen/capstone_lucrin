@@ -28,5 +28,12 @@
              parent="Mastering_SampleModule::menu"
              action="mastering/livestream/index"
              resource="Mastering_SampleModule::live_stream_integration"/>
+        <add id="Mastering_SampleModule::daily_country_summary"
+             title="Daily Country Summary"
+             module="Mastering_SampleModule"
+             sortOrder="30"
+             parent="Mastering_SampleModule::menu"
+             action="mastering/summary/index"
+             resource="Mastering_SampleModule::daily_country_summary"/>
     </menu>
 </config>
