@@ -1,0 +1,140 @@
+<div class="daily-country-summary">
+    <div class="filter-form">
+        <form method="get" action="<?= $block->getUrl('*/*/index') ?>">
+            <div class="field">
+                <label for="from_date"><?= $block->escapeHtml(__('From Date')) ?></label>
+                <input type="date" id="from_date" name="from_date" value="<?= $block->escapeHtmlAttr($block->getFromDate()) ?>">
+            </div>
+            <div class="field">
+                <label for="to_date"><?= $block->escapeHtml(__('To Date')) ?></label>
+                <input type="date" id="to_date" name="to_date" value="<?= $block->escapeHtmlAttr($block->getToDate()) ?>">
+            </div>
+            <div class="actions">
+                <button type="submit" class="action-primary action-apply"><?= $block->escapeHtml(__('Apply Filter')) ?></button>
+                <a href="<?= $block->getUrl('*/*/index') ?>" class="action-secondary action-reset"><?= $block->escapeHtml(__('Reset Filter')) ?></a>
+            </div>
+        </form>
+    </div>
+    <h1><?= $block->escapeHtml(__('Daily Cost & Revenue by Country Summary')) ?></h1>
+    
+    <div class="summary-content">
+        <?php $summaryData = $block->getDailySummaryData(); ?>
+        <?php if (!empty($summaryData)): ?>
+            <table class="admin__table-secondary">
+                <thead>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Country')) ?></th>
+                        <th><?= $block->escapeHtml(__('Cost (Euro)')) ?></th>
+                        <th><?= $block->escapeHtml(__('Revenue (Euro)')) ?></th>
+                        <th><?= $block->escapeHtml(__('Cost Ratio')) ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($summaryData as $data): ?>
+                        <tr<?= $data['country_name'] === 'Grand Total' ? ' class="grand-total"' : '' ?>>
+                            <td><?= $block->escapeHtml($data['country_name']) ?></td>
+                            <td><?= $block->escapeHtml('€' . number_format($data['cost_euro'], 2)) ?></td>
+                            <td><?= $block->escapeHtml('€' . number_format($data['revenue'], 2)) ?></td>
+                            <td><?= $block->escapeHtml(number_format($data['cost_ratio'], 4) . '%') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p><?= $block->escapeHtml(__('No data available.')) ?></p>
+        <?php endif; ?>
+    </div>
+    
+    <div class="export-form">
+        <form method="get" action="<?= $block->getUrl('*/*/export') ?>">
+            <div class="actions">
+                <button type="submit" class="action-secondary export-button"><?= $block->escapeHtml(__('Export CSV')) ?></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .daily-country-summary {
+        margin: 20px;
+    }
+    .daily-country-summary h1 {
+        margin-bottom: 20px;
+    }
+    .admin__table-secondary {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .admin__table-secondary th,
+    .admin__table-secondary td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+    .admin__table-secondary th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+    }
+    .admin__table-secondary tr:nth-child(even) {
+        background-color: #f8f8f8;
+    }
+    .admin__table-secondary .grand-total {
+        font-weight: bold;
+        background-color: #e0e0e0;
+    }
+    .filter-form {
+        margin-bottom: 20px;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+    }
+    .filter-form .field {
+        display: inline-block;
+        margin-right: 20px;
+    }
+    .filter-form label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    .filter-form input[type="date"] {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    .filter-form .actions {
+        display: inline-block;
+        vertical-align: bottom;
+    }
+    .action-reset {
+        background: #f0f0f0;
+        color: #333;
+        border: 1px solid #ccc;
+        margin-left: 10px;
+    }
+    .action-reset:hover {
+        background: #e0e0e0;
+    }
+    .export-form {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .export-form .actions {
+        display: inline-flex;
+        gap: 10px;
+    }
+    .export-button {
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: 1px solid #3498db;
+        background-color: #3498db;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    .export-button:hover {
+        background-color: #fff;
+        color: #3498db;
+    }
+</style>
