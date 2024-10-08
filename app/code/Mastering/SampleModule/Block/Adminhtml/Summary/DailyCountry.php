@@ -115,13 +115,12 @@ class DailyCountry extends Template
     private function getRandomCostPercentage()
     {
         // Generate a random cost percentage between 50% and 90%
-        return mt_rand(5000, 9000) / 10000; // This gives more precision
+        return mt_rand(5000, 9000) / 10000; 
     }
 
     private function convertToEuro($amount)
     {
         // Assuming a fixed exchange rate for simplicity. In a real-world scenario,
-        // you'd want to use a service or API to get the current exchange rate.
         $exchangeRate = 0.85; // 1 USD = 0.85 EUR (example rate)
         return $amount * $exchangeRate;
     }

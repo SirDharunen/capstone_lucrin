@@ -47,6 +47,8 @@
     
     <div class="export-form">
         <form method="get" action="<?= $block->getUrl('*/*/export') ?>">
+            <input type="hidden" name="from_date" value="<?= $block->escapeHtmlAttr($block->getFromDate()) ?>">
+            <input type="hidden" name="to_date" value="<?= $block->escapeHtmlAttr($block->getToDate()) ?>">
             <div class="actions">
                 <button type="submit" class="action-secondary export-button"><?= $block->escapeHtml(__('Export CSV')) ?></button>
             </div>

@@ -45,6 +45,14 @@ class Export extends Action
 
     private function generateCsvContent()
     {
+        // Get the filter dates from the request
+        $fromDate = $this->getRequest()->getParam('from_date');
+        $toDate = $this->getRequest()->getParam('to_date');
+
+        // Set the filter dates in the block
+        $this->dailyCountryBlock->setFromDate($fromDate);
+        $this->dailyCountryBlock->setToDate($toDate);
+
         $summaryData = $this->dailyCountryBlock->getDailySummaryData();
         $content = "Country,Cost (Euro),Revenue (Euro),Cost Ratio\n";
 
@@ -52,25 +60,20 @@ class Export extends Action
             $content .= sprintf(
                 "%s,%s,%s,%s\n",
                 $this->escapeCsv($data['country_name']),
-                $this->formatNumber($data['cost_euro']),
-                $this->formatNumber($data['revenue']),
-                $this->formatNumber($data['cost_ratio'], true)
+                $this->escapeCsv($data['cost']),  // Use 'cost' instead of 'cost_euro'
+                $this->escapeCsv($data['revenue']),
+                $this->escapeCsv($data['cost_ratio'])
             );
         }
 
         return $content;
     }
 
-    private function formatNumber($value, $isPercentage = false)
-    {
-        if (is_null($value)) {
-            return 'N/A';
-        }
-        return $isPercentage ? number_format($value, 4, '.', '') : number_format($value, 2, '.', '');
-    }
-
     private function escapeCsv($value)
     {
+        if (is_numeric($value)) {
+            return $value;  // Don't quote numeric values
+        }
         if (strpos($value, ',') !== false || strpos($value, '"') !== false || strpos($value, "\n") !== false) {
             return '"' . str_replace('"', '""', $value) . '"';
         }
